@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API = "http://localhost:3000";
+const API = "https://lms-hauk.onrender.com";
 
 export default function App() {
   const [page, setPage] = useState("login");
