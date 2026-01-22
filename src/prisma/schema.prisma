@@ -1,0 +1,91 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum Role {
+  ADMIN
+  INSTRUCTOR
+  STUDENT
+}
+
+model User {
+  id          String       @id @default(uuid())
+  name        String
+  email       String       @unique
+  password    String
+  role        Role
+  courses     Course[]     @relation("InstructorCourses")
+  enrollments Enrollment[]
+  submissions Submission[]
+  createdAt   DateTime     @default(now())
+}
+
+model Course {
+  id           String       @id @default(uuid())
+  title        String
+  description  String
+  instructor   User         @relation("InstructorCourses", fields: [instructorId], references: [id])
+  instructorId String
+  modules      Module[]
+  enrollments  Enrollment[]
+  createdAt    DateTime     @default(now())
+}
+
+model Module {
+  id        String   @id @default(uuid())
+  title     String
+  course    Course   @relation(fields: [courseId], references: [id])
+  courseId  String
+  lessons   Lesson[]
+}
+
+model Lesson {
+  id         String      @id @default(uuid())
+  title      String
+  type       String
+  assetUrl   String?
+  module     Module      @relation(fields: [moduleId], references: [id])
+  moduleId   String
+  assignment Assignment?
+}
+
+model Assignment {
+  id         String       @id @default(uuid())
+  lesson     Lesson       @relation(fields: [lessonId], references: [id])
+  lessonId   String       @unique
+  dueDate    DateTime
+  submissions Submission[]
+}
+
+model Submission {
+  id            String      @id @default(uuid())
+  student       User        @relation(fields: [studentId], references: [id])
+  studentId     String
+  assignment    Assignment  @relation(fields: [assignmentId], references: [id])
+  assignmentId  String
+  fileUrl       String
+  grade         Float?
+  feedback      String?
+  submittedAt   DateTime    @default(now())
+}
+
+model Enrollment {
+  id        String   @id @default(uuid())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    String
+  course    Course   @relation(fields: [courseId], references: [id])
+  courseId  String
+  progress  Float    @default(0)
+}
+
