@@ -6,7 +6,8 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    
+      "prisma:generate": "prisma generate --schema=src/prisma/schema.prisma",
+  "prisma:migrate": "prisma migrate deploy --schema=src/prisma/schema.prisma",
     "build": "nest build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
     "start": "nest start",
